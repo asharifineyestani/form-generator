@@ -16,3 +16,16 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+
+/*
+|--------------------------------------------------------------------------
+| Crud routes
+|--------------------------------------------------------------------------
+|
+*/
+Route::group([
+    'namespace'  => 'Crud',
+], function ($router) {
+    require base_path('routes/inc/crud.php');
+});
