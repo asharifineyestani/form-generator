@@ -32,5 +32,18 @@ class Type extends Seeder
         \Afracode\Form\App\Models\Type::create([
             'title' => 'boolean',
         ]);
+
+        \Afracode\Form\App\Models\Type::create([
+            'title' => 'select-image',
+        ]);
+
+        \Afracode\Form\App\Models\Type::create([
+            'title' => 'multiple-select-image',
+        ]);
+
+
+        \Afracode\Form\App\Models\Type::create([
+            'title' => 'image-cropper',
+        ]);
     }
 }
