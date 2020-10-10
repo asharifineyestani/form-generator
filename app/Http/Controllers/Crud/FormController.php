@@ -34,9 +34,6 @@ class FormController extends CrudController
         ]);
 
 
-
-
-
         $this->crud->setField([
             'type' => 'relation',
             'method' => 'fields',
@@ -44,8 +41,10 @@ class FormController extends CrudController
         ]);
 
 
-
-
+//        $this->crud->setField([
+//            'type' => 'vue-component',
+//            'name' => 'field-table',
+//        ]);
 
 
     }
@@ -54,5 +53,12 @@ class FormController extends CrudController
     public function setupEdit()
     {
         $this->setupCreate();
+    }
+
+
+    public function view($id)
+    {
+        $field['name'] = 'form-view';
+        return view('vue' , compact('field'));
     }
 }
