@@ -50,6 +50,8 @@ class CreateFormsTable extends Migration
             $table->id();
             $table->foreignId('field_id')->onDelete('cascade');
             $table->foreignId('form_id')->onDelete('cascade');
+            $table->tinyInteger('col')->default(12);
+            $table->integer('price')->default(0);
             $table->timestamps();
         });
     }

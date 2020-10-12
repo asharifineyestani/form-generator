@@ -13,3 +13,4 @@ yarn-error.log
 /.idea
 /packages
 /public/crud/
+/public/uploads/

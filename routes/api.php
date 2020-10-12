@@ -17,3 +17,18 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+
+/*
+|--------------------------------------------------------------------------
+| form-generator
+|--------------------------------------------------------------------------
+|
+*/
+Route::group([
+    'namespace'  => 'Form',
+    'prefix'     => 'form-generator',
+], function ($router) {
+    require base_path('routes/inc/form-generator.php');
+});
+
