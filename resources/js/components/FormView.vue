@@ -12,74 +12,36 @@
 
         <div class="form-row">
 
-
-
-            <toggle-button :value="true"
-                           :labels="{checked: 'VIP', unchecked: null}"/>
-
-
             <div v-for="field in fields" :class="'form-group col-md-'+field.col">
 
-
-
-
-                <template v-if="field.type == 'image-cropper'">
-                    <label></label>
-                    <div class="form-group">
-                        <span>لطفا طرح مورد نظر را آپلود نمایید</span>
-                        <button @click="toggleShow" class="btn btn-md btn-info" type="button">بارگزاری تصویر</button>
-                        <image-crop field="img"
-
-                                    v-model="show"
-                                    :noCircle="true"
-                                    :noSquare="true"
-                                    :width="300"
-                                    :height="300"
-                                    url="/upload"
-                                    img-format="png">
-
-                        </image-crop>
-                        <img :src="imgDataUrl">
-                    </div>
-                </template>
-
-                es
-
-                <template v-if="field.type == 'image-cropper'">
-                    <label></label>
-                    <div class="form-group">
-                        <span>لطفا طرح مورد نظر را آپلود نمایید</span>
-                        <button @click="toggleShow" class="btn btn-md btn-info" type="button">بارگزاری تصویر</button>
-                        <image-crop field="img"
-
-                                    v-model="show"
-                                    :noCircle="true"
-                                    :noSquare="true"
-                                    :width="300"
-                                    :height="300"
-                                    url="/upload"
-                                    img-format="png">
-
-                        </image-crop>
-                        <img :src="imgDataUrl">
-                    </div>
-                </template>
-
-
-                <template v-if="field.type == 'select-image'">
+                <template v-if="field.type=='boolean'">
                     <label>{{field.title}}</label>
-                    <v-select
-                        dir="rtl"
-                        v-model="form.options[field.id]"
-                        label="title"
-                        :options="field.options"
-                        @input="setSelected"
-                    >
-                        <template slot="option" slot-scope="option">
-                            <img :src="option.src" style="width: 50px;"/>
-                            {{ option.title }}
-                        </template>
-                    </v-select>
+                    <br>
+                    <toggle-button :value="true"
+                                   :labels="{'unchecked' : field.options[0].value,'checked' : field.options[1].value}"
+                                   @change="changeToggleSwitch($event , field.options , field.id )"
+                                   v-model="form.options[field.id]"
+                    />
+                </template>
+
+                <template v-if="field.type == 'image-cropper'">
+                    <label></label>
+                    <div class="form-group">
+                        <span>لطفا طرح مورد نظر را آپلود نمایید</span>
+                        <button @click="toggleShow" class="btn btn-md btn-info" type="button">بارگزاری تصویر</button>
+                        <image-crop field="img"
+
+                                    v-model="show"
+                                    :noCircle="true"
+                                    :noSquare="true"
+                                    :width="300"
+                                    :height="300"
+                                    url="/upload"
+                                    img-format="png">
+
+                        </image-crop>
+                        <img :src="imgDataUrl">
+                    </div>
                 </template>
 
 
@@ -88,7 +50,7 @@
                     <v-select
                         dir="rtl"
                         v-model="form.options[field.id]"
-                        label="title"
+                        label="alt"
                         :options="field.options"
                         @input="setSelected"
                         taggable
@@ -96,7 +58,7 @@
                     >
                         <template slot="option" slot-scope="option">
                             <img :src="option.src" style="width: 50px;"/>
-                            {{ option.title }}
+                            {{ option.alt }}
                         </template>
                     </v-select>
                 </template>
@@ -112,7 +74,7 @@
                     <v-select
                         dir="rtl"
                         v-model="form.options[field.id]"
-                        label="title"
+                        label="alt"
                         :options="field.options"
                         @input="setSelected"
                     >
@@ -127,7 +89,7 @@
                         v-model="form.options[field.id]"
                         taggable
                         multiple
-                        label="title"
+                        label="alt"
                         :options="field.options"
                         @input="setSelected"
                     />
@@ -221,6 +183,15 @@
 
         methods: {
 
+
+            changeToggleSwitch(obj, options, id) {
+                if (obj.value)
+                    this.form.options[id] = options[1];
+                else
+                    this.form.options[id] = options[0];
+            },
+
+
             get() {
                 axios
                     .get('/api/form-generator/forms/' + this.entityId)
@@ -230,9 +201,23 @@
             },
 
 
-            testSadegh(value) {
+            adaptSwitchLabel(options = null) {
 
 
+                let result = {
+                    'unchecked': options[0].value,
+                    'checked': options[1].value,
+                };
+
+                return result;
+
+
+                // let result = [];
+                // options.forEach(function (option) {
+                //
+                //     result[option.title] = option.value;
+                // })
+                // return Object.assign({}, result);
             },
 
 

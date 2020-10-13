@@ -11,10 +11,11 @@ class OptionCollection extends JsonResource
     {
         return [
             'id' => $this->id,
-            'title' => $this->getTitle(),
+            'title' => $this->title,
             'price' => $this->price,
             'alt' => $this->getTitle(),
             'src' => $this->media_path,
+            'value' => $this->value,
         ];
     }
 
@@ -27,4 +28,7 @@ class OptionCollection extends JsonResource
 
         return $str;
     }
+
+
+
 }

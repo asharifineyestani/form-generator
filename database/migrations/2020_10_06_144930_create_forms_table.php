@@ -33,6 +33,7 @@ class CreateFormsTable extends Migration
             $table->foreignId('field_id')->constrained()->onDelete('cascade');
             $table->string('title');
             $table->string('media_path')->nullable();
+            $table->string('value')->nullable();
             $table->integer('price')->default(0);
             $table->timestamps();
         });

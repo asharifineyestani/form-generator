@@ -114,6 +114,22 @@ class DatabaseSeeder extends Seeder
             'type_id' => 5
         ]);
 
+
+        \Afracode\Form\App\Models\Option::create([
+            'title' => 'unchecked',
+            'field_id' => 5,
+            'price' => 0 ,
+            'value' => null ,
+        ]);
+
+
+        \Afracode\Form\App\Models\Option::create([
+            'title' => 'checked',
+            'field_id' => 5,
+            'price' => 1000000 ,
+            'value' => 'VIP' ,
+        ]);
+
        $field6 =  \Afracode\Form\App\Models\Field::create([
             'title' => 'مهره',
             'type_id' => 7
