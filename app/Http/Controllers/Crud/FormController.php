@@ -61,4 +61,11 @@ class FormController extends CrudController
         $field['name'] = 'form-view';
         return view('vue' , compact('field'));
     }
+
+
+    public function fields($id)
+    {
+        $field['name'] = 'form-fields';
+        return view('content' , compact('field'));
+    }
 }
