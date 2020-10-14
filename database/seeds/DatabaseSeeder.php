@@ -89,7 +89,7 @@ class DatabaseSeeder extends Seeder
         \Afracode\Form\App\Models\Option::create([
             'title' => 'مات',
             'field_id' => 2,
-            'price' => 0 ,
+            'price' => 5000 ,
         ]);
 
         \Afracode\Form\App\Models\Option::create([
@@ -110,7 +110,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         \Afracode\Form\App\Models\Field::create([
-            'title' => 'boolean',
+            'title' => 'VIP',
             'type_id' => 5
         ]);
 

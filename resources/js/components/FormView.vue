@@ -1,19 +1,14 @@
 <template>
     <div>
 
-
         <div v-if="totalPrice > 0 " class="jumbotron">
             <h3 class="display-5">قیمت:
                 {{totalPrice}}
                 تومان
             </h3>
         </div>
-
-
         <div class="form-row">
-
             <div v-for="field in fields" :class="'form-group col-md-'+field.col">
-
                 <template v-if="field.type=='boolean'">
                     <label>{{field.title}}</label>
                     <br>
@@ -28,7 +23,9 @@
                     <label></label>
                     <div class="form-group">
                         <span>لطفا طرح مورد نظر را آپلود نمایید</span>
-                        <button @click="toggleShow" class="btn btn-md btn-info" type="button">بارگزاری تصویر</button>
+                        <button @click="toggleShow" class="btn btn-md btn-info" type="button">بارگزاری
+                            تصویر
+                        </button>
                         <image-crop field="img"
 
                                     v-model="show"
@@ -44,6 +41,21 @@
                     </div>
                 </template>
 
+                <template v-if="field.type == 'select-image'">
+                    <label>{{field.title}}</label>
+                    <v-select
+                        dir="rtl"
+                        v-model="form.options[field.id]"
+                        label="alt"
+                        :options="field.options"
+                        @input="setSelected"
+                    >
+                        <template slot="option" slot-scope="option">
+                            <img :src="option.src" style="width: 50px;"/>
+                            {{ option.alt }}
+                        </template>
+                    </v-select>
+                </template>
 
                 <template v-if="field.type == 'multiple-select-image'">
                     <label>{{field.title}}</label>
@@ -63,7 +75,6 @@
                     </v-select>
                 </template>
 
-
                 <template v-if="field.type == 'string'">
                     <label>{{field.title}}</label>
                     <input class="form-control" type="text">
@@ -81,7 +92,6 @@
                     </v-select>
                 </template>
 
-
                 <template v-else-if="field.type === 'multiple-select'">
                     <label>{{field.title}}</label>
                     <v-select
@@ -94,11 +104,9 @@
                         @input="setSelected"
                     />
                 </template>
-
             </div>
         </div>
     </div>
-
 
 </template>
 
@@ -191,33 +199,15 @@
                     this.form.options[id] = options[0];
             },
 
+            toggleShow() {
+                this.show = !this.show;
+            },
+
 
             get() {
                 axios
                     .get('/api/form-generator/forms/' + this.entityId)
                     .then(response => (this.fields = response.data.data.fields))
-
-
-            },
-
-
-            adaptSwitchLabel(options = null) {
-
-
-                let result = {
-                    'unchecked': options[0].value,
-                    'checked': options[1].value,
-                };
-
-                return result;
-
-
-                // let result = [];
-                // options.forEach(function (option) {
-                //
-                //     result[option.title] = option.value;
-                // })
-                // return Object.assign({}, result);
             },
 
 
@@ -226,21 +216,11 @@
                 this.calculate();
             },
 
-            setSelected() {
-            },
-
 
             calculate() {
-
-                let self = this;
                 let price = this.price;
-
                 this.form.options.forEach(function (item) {
-                    // if (self.formOptions.indexOf(item))
-                    //     self.formOptions.push(item)
-
                     let options = Array.isArray(item) ? item : [item];
-
                     options.forEach(function (option) {
                         price += option.price;
                     })
@@ -248,56 +228,6 @@
 
                 this.price += price;
             },
-
-
-            onEdit(product) {
-
-            },
-            update(item) {
-                axios
-                    .put('/api/form-generator/fields/' + item.id, this.editRow)
-
-                this.reset()
-            },
-
-            store() {
-                this.newRow.category_id = this.entityId;
-                axios
-                    .post('/api/form-generator/fields/', this.newRow)
-
-                this.reset()
-            },
-
-            destroy(item) {
-                axios
-                    .delete('/api/form-generator/fields/' + item.id)
-
-                this.reset()
-            },
-            onreset() {
-
-            },
-            edit(item) {
-                this.editRow = item
-            },
-
-            reset() {
-                this.editRow = {}
-                this.creatInput = false
-                this.get()
-            },
-
-            create() {
-                this.editRow = {}
-                this.creatInput = true
-            },
-
-
-            toggleShow() {
-                this.show = !this.show;
-            },
-
-
         }
     }
 </script>
