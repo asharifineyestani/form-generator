@@ -1,8 +1,28 @@
 <template>
 
     <b-row class="mt-2">
+
         <b-col cols="3">
-            <div class="p-2 alert alert-secondary"    v-if="sidebar === 'showFields'">
+
+            <div class="p-2 alert alert-secondary" v-if="activeFieldId !== null">
+                <h3>{{formFields[activeFieldId].name}}</h3>
+                <button @click="showFieldsInSidebar">C</button>
+
+
+                <div class="form-group">
+                    <label>عنوان</label>
+                    <input type="text" class="form-control" v-model = "formFields[activeFieldId].name" >
+
+                    <label>توضیحات</label>
+                    <input type="text" class="form-control" v-model = "formFields[activeFieldId].description" >
+
+                    <label>مقدار راهنما</label>
+                    <input type="text" class="form-control" v-model = "formFields[activeFieldId].placeholder" >
+
+                </div>
+
+            </div>
+            <div class="p-2 alert alert-secondary" v-else>
                 <h3>افزودن فیلد</h3>
                 <draggable
                     class="list-group"
@@ -14,17 +34,7 @@
                 </draggable>
             </div>
 
-            <div class="p-2 alert alert-secondary"   v-else>
-                <h3>{{activeField.name}}</h3>
-                <button  @click="showFieldsInSidebar">C</button>
 
-
-                <div class="form-group">
-                    <input type="text" class="form-control" v-model="formFields[0].name">
-
-                </div>
-
-            </div>
         </b-col>
         <b-col cols="9">
             <div class="p-2 alert alert-primary">
@@ -67,7 +77,7 @@
         },
         data() {
             return {
-                sidebar : 'showFields',
+                activeFieldId: null,
                 test: null,
                 show: false,
                 fields: [
@@ -88,30 +98,7 @@
                         icon: "text",
                     },
                 ],
-                formFields: [
-                    {
-                        name: "111",
-                        type: "text",
-                        icon: "text",
-                        description: "We'll never share your email with anyone else.",
-                        placeholder: "Enter email",
-                        required: true,
-                        style: {
-                            active: false
-                        }
-                    },
-                    {
-                        name: "222",
-                        type: "text",
-                        icon: "text",
-                        description: "We'll never share your email with anyone else.",
-                        placeholder: "Enter email",
-                        required: true,
-                        style: {
-                            active: false
-                        }
-                    }
-                ],
+                formFields: [],
                 form: {
                     name: "نام فرم"
                 }
@@ -125,20 +112,13 @@
             totalPrice: function () {
                 return 0;
             },
-
-            activeField() {
-                return this.formFields.filter(function(el){
-                    return el.style.active === true;
-                })[0];
-
-            }
         },
 
         methods: {
 
             showFieldsInSidebar() {
                 this.inActiveFields();
-                this.sidebar = 'showFields';
+                this.activeFieldId = null;
             },
 
             inActiveFields() {
@@ -150,12 +130,11 @@
 
                 this.inActiveFields();
 
-                let newField = Object.assign({}, this.formFields, {...this.formFields[index],...{style: {active: true}}});
+                let newField = Object.assign({}, this.formFields, {...this.formFields[index], ...{style: {active: true}}});
                 Vue.set(this.formFields, index, newField);
 
 
-
-                this.sidebar = 'activeField';
+                this.activeFieldId = index;
 
             },
 
@@ -165,7 +144,7 @@
 
                 this.formFields.push(value);
 
-                this.makeActiveField(null , this.formFields.length - 1)
+                this.makeActiveField(null, this.formFields.length - 1)
             },
 
 
@@ -208,8 +187,6 @@
     }
 
 
-
-
     .active button {
         display: block;
     }
@@ -235,10 +212,6 @@
 
         }
     }
-
-
-
-
 
 
 </style>
