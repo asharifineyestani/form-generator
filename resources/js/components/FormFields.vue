@@ -8,18 +8,36 @@
                 <h3>{{formFields[activeFieldId].name}}</h3>
                 <button @click="showFieldsInSidebar">C</button>
 
+                <b-form-group label="نام:">
+                    <input type="text" class="form-control" v-model="formFields[activeFieldId].name">
+                </b-form-group>
+                <b-form-group label="توضیحات:">
+                    <input type="text" class="form-control" v-model="formFields[activeFieldId].description">
+                </b-form-group>
+                <b-form-group label="مقدار راهنما:">
+                    <input type="text" class="form-control" v-model="formFields[activeFieldId].placeholder">
+                </b-form-group>
+                <b-form-group label="مقدار پیشفرض:">
+                    <input type="text" class="form-control" v-model="formFields[activeFieldId].value">
+                </b-form-group>
 
-                <div class="form-group">
-                    <label>عنوان</label>
-                    <input type="text" class="form-control" v-model = "formFields[activeFieldId].name" >
 
-                    <label>توضیحات</label>
-                    <input type="text" class="form-control" v-model = "formFields[activeFieldId].description" >
+                <b-form-group label="تنظیمات:">
+                    <b-form-checkbox v-model="formFields[activeFieldId].label">عنوان</b-form-checkbox>
+                    <b-form-checkbox v-model="formFields[activeFieldId].required"
+                                     :disabled=" ! (formFields[activeFieldId].label)">اجباری
+                    </b-form-checkbox>
+                    <b-form-checkbox v-model="formFields[activeFieldId].disabled">غیرفعال</b-form-checkbox>
+                    <b-form-checkbox v-model="formFields[activeFieldId].hidden">پنهان</b-form-checkbox>
+                </b-form-group>
 
-                    <label>مقدار راهنما</label>
-                    <input type="text" class="form-control" v-model = "formFields[activeFieldId].placeholder" >
 
-                </div>
+                <b-button-group>
+                    <b-button @click="changeCol(4)">کوچک</b-button>
+                    <b-button @click="changeCol(6)">متوسط</b-button>
+                    <b-button @click="changeCol(12)">بزرگ</b-button>
+                </b-button-group>
+
 
             </div>
             <div class="p-2 alert alert-secondary" v-else>
@@ -48,11 +66,21 @@
                     <div class="form-group"
                          v-bind:class="{ active: element.style.active }"
                          v-for="(element , index) in formFields" :key="index"
+                         @click="makeActiveField(index)"
+
                     >
-                        <label>{{element.name}}</label>
-                        <input type="email" class="form-control" aria-describedby="emailHelp"
-                               :placeholder="element.placeholder"
-                               @click="makeActiveField($event , index)">
+                        <label v-if="element.label"> <span v-if="element.required">*</span> {{element.name}}
+                        </label>
+
+                        <div v-if="element.hidden">Hidden</div>
+                        <b-col :cols="element.col">
+                            <b-form-input
+                                :placeholder="element.placeholder"
+                                :disabled="element.disabled"
+                                :value="element.value"
+                            ></b-form-input>
+                        </b-col>
+
                         <small class="form-text text-muted">{{element.description}}</small>
                         <button class="delete" @click="deleteField(index)">D</button>
                         <button class="clone" @click="cloneField(element)">C</button>
@@ -85,9 +113,14 @@
                         name: "متن",
                         type: "text",
                         icon: "text",
-                        description: "We'll never share your email with anyone else.",
-                        placeholder: "Enter email",
-                        required: true,
+                        description: '',
+                        placeholder: '',
+                        required: false,
+                        disabled: false,
+                        hidden: false,
+                        label: true,
+                        value: null,
+                        col: 12,
                         style: {
                             active: false
                         }
@@ -96,9 +129,20 @@
                         name: "انتخاب",
                         type: "select",
                         icon: "text",
+                        placeholder: '',
+                        required: false,
+                        disabled: false,
+                        hidden: false,
+                        label: true,
+                        value: null,
+                        col: 12,
+                        style: {
+                            active: false
+                        }
                     },
                 ],
-                formFields: [],
+                formFields: [
+                ],
                 form: {
                     name: "نام فرم"
                 }
@@ -116,6 +160,11 @@
 
         methods: {
 
+
+            changeCol(value) {
+                this.formFields[this.activeFieldId].col = value;
+            },
+
             showFieldsInSidebar() {
                 this.inActiveFields();
                 this.activeFieldId = null;
@@ -126,7 +175,7 @@
                     this.formFields[i].style.active = false;
             },
 
-            makeActiveField(value, index) {
+            makeActiveField( index) {
 
                 this.inActiveFields();
 
