@@ -8,6 +8,10 @@
                 <h3>{{formFields[activeFieldId].name}}</h3>
                 <button @click="showFieldsInSidebar">C</button>
 
+
+
+
+
                 <b-form-group label="نام:">
                     <input type="text" class="form-control" v-model="formFields[activeFieldId].name">
                 </b-form-group>
@@ -20,6 +24,18 @@
                 <b-form-group label="مقدار پیشفرض:">
                     <input type="text" class="form-control" v-model="formFields[activeFieldId].value">
                 </b-form-group>
+
+                <div class="row" v-if="formFields[activeFieldId].type == 'number'">
+                    <div class="col">
+                        <label>حداقل</label>
+                        <input type="number" class="form-control" v-model="formFields[activeFieldId].min">
+                    </div>
+                    <div class="col">
+                        <label>حداکثر</label>
+                        <input type="number" class="form-control" v-model="formFields[activeFieldId].max">
+                    </div>
+                </div>
+
 
 
                 <b-form-group label="تنظیمات:">
@@ -67,6 +83,7 @@
                          v-bind:class="{ active: element.style.active }"
                          v-for="(element , index) in formFields" :key="index"
                          @click="makeActiveField(index)"
+                         v-if="element.type == 'text'"
 
                     >
                         <label v-if="element.label"> <span v-if="element.required">*</span> {{element.name}}
@@ -78,6 +95,35 @@
                                 :placeholder="element.placeholder"
                                 :disabled="element.disabled"
                                 :value="element.value"
+                            ></b-form-input>
+                        </b-col>
+
+                        <small class="form-text text-muted">{{element.description}}</small>
+                        <button class="delete" @click="deleteField(index)">D</button>
+                        <button class="clone" @click="cloneField(element)">C</button>
+
+                    </div>
+
+
+
+                    <div class="form-group"
+                         v-bind:class="{ active: element.style.active }"
+                         v-for="(element , index) in formFields" :key="index"
+                         @click="makeActiveField(index)"
+                         v-if="element.type == 'number'"
+
+                    >
+                        <label v-if="element.label"> <span v-if="element.required">*</span> {{element.name}}
+                        </label>
+
+                        <div v-if="element.hidden">Hidden</div>
+                        <b-col :cols="element.col">
+                            <b-form-input
+                                :placeholder="element.placeholder"
+                                :disabled="element.disabled"
+                                :value="element.value"
+                                type="number"
+                                :min="element.min" :max="element.max"
                             ></b-form-input>
                         </b-col>
 
@@ -113,6 +159,24 @@
                         name: "متن",
                         type: "text",
                         icon: "text",
+                        description: '',
+                        placeholder: '',
+                        required: false,
+                        disabled: false,
+                        hidden: false,
+                        label: true,
+                        value: null,
+                        col: 12,
+                        style: {
+                            active: false
+                        }
+                    },
+                    {
+                        name: "عدد",
+                        type: "number",
+                        icon: "text",
+                        min: 1,
+                        max: 5,
                         description: '',
                         placeholder: '',
                         required: false,
