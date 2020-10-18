@@ -25,13 +25,25 @@
                     <input type="text" class="form-control" v-model="formFields[activeFieldId].value">
                 </b-form-group>
 
-                <div class="row" v-if="formFields[activeFieldId].type == 'number'">
+                <div class="row" v-if="['number','text'].includes(formFields[activeFieldId].type)">
                     <div class="col">
                         <label>حداقل</label>
                         <input type="number" class="form-control" v-model="formFields[activeFieldId].min">
                     </div>
                     <div class="col">
                         <label>حداکثر</label>
+                        <input type="number" class="form-control" v-model="formFields[activeFieldId].max">
+                    </div>
+                </div>
+
+
+                <div class="row" v-if="formFields[activeFieldId].type == 'textarea'">
+                    <div class="col">
+                        <label>سطر</label>
+                        <input type="number" class="form-control" v-model="formFields[activeFieldId].rows">
+                    </div>
+                    <div class="col">
+                        <label>حداکثر سطر</label>
                         <input type="number" class="form-control" v-model="formFields[activeFieldId].max">
                     </div>
                 </div>
@@ -79,11 +91,11 @@
                     group="fields">
 
 
+
                     <div class="form-group"
                          v-bind:class="{ active: element.style.active }"
                          v-for="(element , index) in formFields" :key="index"
                          @click="makeActiveField(index)"
-                         v-if="element.type == 'text'"
 
                     >
                         <label v-if="element.label"> <span v-if="element.required">*</span> {{element.name}}
@@ -91,40 +103,34 @@
 
                         <div v-if="element.hidden">Hidden</div>
                         <b-col :cols="element.col">
-                            <b-form-input
+                            <b-form-textarea
+                                v-if="element.type == 'textarea'"
                                 :placeholder="element.placeholder"
                                 :disabled="element.disabled"
                                 :value="element.value"
-                            ></b-form-input>
-                        </b-col>
-
-                        <small class="form-text text-muted">{{element.description}}</small>
-                        <button class="delete" @click="deleteField(index)">D</button>
-                        <button class="clone" @click="cloneField(element)">C</button>
-
-                    </div>
+                                :rows="element.rows"
+                                :max-rows="element.max"
+                            ></b-form-textarea>
 
 
-
-                    <div class="form-group"
-                         v-bind:class="{ active: element.style.active }"
-                         v-for="(element , index) in formFields" :key="index"
-                         @click="makeActiveField(index)"
-                         v-if="element.type == 'number'"
-
-                    >
-                        <label v-if="element.label"> <span v-if="element.required">*</span> {{element.name}}
-                        </label>
-
-                        <div v-if="element.hidden">Hidden</div>
-                        <b-col :cols="element.col">
                             <b-form-input
+                                v-if="element.type == 'number'"
                                 :placeholder="element.placeholder"
                                 :disabled="element.disabled"
                                 :value="element.value"
                                 type="number"
                                 :min="element.min" :max="element.max"
                             ></b-form-input>
+
+
+                            <b-form-input
+                                v-if="element.type == 'text'"
+                                :placeholder="element.placeholder"
+                                :disabled="element.disabled"
+                                :value="element.value"
+                                :maxlength="element.max"
+                            ></b-form-input>
+
                         </b-col>
 
                         <small class="form-text text-muted">{{element.description}}</small>
@@ -132,6 +138,10 @@
                         <button class="clone" @click="cloneField(element)">C</button>
 
                     </div>
+
+
+
+
 
 
                 </draggable>
@@ -156,16 +166,36 @@
                 show: false,
                 fields: [
                     {
-                        name: "متن",
-                        type: "text",
+                        name: "متن چند خطی",
+                        type: "textarea",
                         icon: "text",
+                        rows: 1,
+                        max: 5,
                         description: '',
                         placeholder: '',
                         required: false,
                         disabled: false,
                         hidden: false,
                         label: true,
-                        value: null,
+                        value: '',
+                        col: 12,
+                        style: {
+                            active: false
+                        }
+                    },
+                    {
+                        name: "متن",
+                        type: "text",
+                        icon: "text",
+                        min: 1,
+                        max: 5,
+                        description: '',
+                        placeholder: '',
+                        required: false,
+                        disabled: false,
+                        hidden: false,
+                        label: true,
+                        value: '',
                         col: 12,
                         style: {
                             active: false
