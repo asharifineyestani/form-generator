@@ -12,20 +12,20 @@
 
 
 
-                <b-form-group label="نام:">
+                <b-form-group label="نام:" v-if="formFields[activeFieldId].hasOwnProperty('name')">
                     <input type="text" class="form-control" v-model="formFields[activeFieldId].name">
                 </b-form-group>
-                <b-form-group label="توضیحات:">
+                <b-form-group label="توضیحات:" v-if="formFields[activeFieldId].hasOwnProperty('description')">
                     <input type="text" class="form-control" v-model="formFields[activeFieldId].description">
                 </b-form-group>
-                <b-form-group label="مقدار راهنما:">
+                <b-form-group label="مقدار راهنما:" v-if="formFields[activeFieldId].hasOwnProperty('placeholder')">
                     <input type="text" class="form-control" v-model="formFields[activeFieldId].placeholder">
                 </b-form-group>
-                <b-form-group label="مقدار پیشفرض:">
+                <b-form-group label="مقدار پیشفرض:" v-if="formFields[activeFieldId].hasOwnProperty('value')">
                     <input type="text" class="form-control" v-model="formFields[activeFieldId].value">
                 </b-form-group>
 
-                <div class="row" v-if="['number','text'].includes(formFields[activeFieldId].type)">
+                <div class="row"  v-if="formFields[activeFieldId].hasOwnProperty('min') && formFields[activeFieldId].hasOwnProperty('max')">
                     <div class="col">
                         <label>حداقل</label>
                         <input type="number" class="form-control" v-model="formFields[activeFieldId].min">
@@ -37,14 +37,14 @@
                 </div>
 
 
-                <div class="row" v-if="formFields[activeFieldId].type == 'textarea'">
+                <div class="row" v-if="formFields[activeFieldId].hasOwnProperty('maxRows') && formFields[activeFieldId].hasOwnProperty('rows')">
                     <div class="col">
                         <label>سطر</label>
                         <input type="number" class="form-control" v-model="formFields[activeFieldId].rows">
                     </div>
                     <div class="col">
                         <label>حداکثر سطر</label>
-                        <input type="number" class="form-control" v-model="formFields[activeFieldId].max">
+                        <input type="number" class="form-control" v-model="formFields[activeFieldId].maxRows">
                     </div>
                 </div>
 
@@ -109,7 +109,7 @@
                                 :disabled="element.disabled"
                                 :value="element.value"
                                 :rows="element.rows"
-                                :max-rows="element.max"
+                                :max-rows="element.maxRows"
                             ></b-form-textarea>
 
 
@@ -120,6 +120,15 @@
                                 :value="element.value"
                                 type="number"
                                 :min="element.min" :max="element.max"
+                            ></b-form-input>
+
+
+                            <b-form-input
+                                v-if="element.type == 'email'"
+                                :placeholder="element.placeholder"
+                                :disabled="element.disabled"
+                                :value="element.value"
+                                type="email"
                             ></b-form-input>
 
 
@@ -166,11 +175,26 @@
                 show: false,
                 fields: [
                     {
+                        name: "ایمیل",
+                        type: "email",
+                        icon: "email",
+                        description: '',
+                        placeholder: '',
+                        required: false,
+                        disabled: false,
+                        hidden: false,
+                        label: true,
+                        col: 12,
+                        style: {
+                            active: false
+                        }
+                    },
+                    {
                         name: "متن چند خطی",
                         type: "textarea",
                         icon: "text",
                         rows: 1,
-                        max: 5,
+                        maxRows: 5,
                         description: '',
                         placeholder: '',
                         required: false,
