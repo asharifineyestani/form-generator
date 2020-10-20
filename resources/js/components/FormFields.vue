@@ -42,8 +42,8 @@
                     </div>
                 </div>
 
-                <b-form-group label="" v-if="formFields[activeFieldId].hasOwnProperty('switchValue')">
-                    <div class="row" v-if="formFields[activeFieldId].hasOwnProperty('switch') ">
+                <b-form-group label="" v-if="formFields[activeFieldId].hasOwnProperty('switch')">
+                    <div class="row">
                         <div class="col">
                             <label>برچسب غیرفعال</label>
                             <input type="text" class="form-control" v-model="formFields[activeFieldId].switch[0].label">
@@ -98,13 +98,18 @@
 
 
                 <b-form-group label="تنظیمات:">
-                    <b-form-checkbox v-model="formFields[activeFieldId].label">عنوان</b-form-checkbox>
-                    <b-form-checkbox v-model="formFields[activeFieldId].required"
-                                     :disabled=" ! (formFields[activeFieldId].label)">اجباری
+                    <b-form-checkbox v-model="formFields[activeFieldId].label" v-if="formFields[activeFieldId].hasOwnProperty('label')">عنوان</b-form-checkbox>
+                    <b-form-checkbox v-model="formFields[activeFieldId].required" v-if="formFields[activeFieldId].hasOwnProperty('required')"
+                                     :disabled=" ! (formFields[activeFieldId].label)" >اجباری
                     </b-form-checkbox>
-                    <b-form-checkbox v-model="formFields[activeFieldId].disabled">غیرفعال</b-form-checkbox>
-                    <b-form-checkbox v-model="formFields[activeFieldId].hidden">پنهان</b-form-checkbox>
+                    <b-form-checkbox v-model="formFields[activeFieldId].disabled" v-if="formFields[activeFieldId].hasOwnProperty('disabled')">غیرفعال</b-form-checkbox>
+                    <b-form-checkbox v-model="formFields[activeFieldId].hidden" v-if="formFields[activeFieldId].hasOwnProperty('hidden')">پنهان</b-form-checkbox>
+                    <b-form-checkbox v-model="formFields[activeFieldId].taggable" v-if="formFields[activeFieldId].hasOwnProperty('taggable')">taggable</b-form-checkbox>
+                    <b-form-checkbox v-model="formFields[activeFieldId].multiple" v-if="formFields[activeFieldId].hasOwnProperty('multiple')">چندتایی</b-form-checkbox>
+                    <b-form-checkbox v-model="formFields[activeFieldId].pushTags" v-if="formFields[activeFieldId].hasOwnProperty('pushTags')">push-tags</b-form-checkbox>
                 </b-form-group>
+
+
 
 
                 <b-button-group v-if="formFields[activeFieldId].hasOwnProperty('col')">
@@ -138,6 +143,8 @@
                     group="fields">
 
 
+
+
                     <div class="form-group"
                          v-bind:class="{ active: element.style.active }"
                          v-for="(element , index) in formFields" :key="index"
@@ -149,6 +156,19 @@
 
                         <div v-if="element.hidden">Hidden</div>
                         <b-col :cols="element.col">
+
+
+                            <v-select
+                                dir="rtl"
+                                v-if="element.type == 'select-image'"
+                                :options="element.options"
+                                :multiple="element.multiple"
+                                :taggable="element.taggable"
+                                :push-tags="element.pushTags"
+
+                            >
+                            </v-select>
+
 
                             <toggle-button
                                 v-if="element.type == 'switch'"
@@ -231,6 +251,39 @@
                 show: false,
 
                 fields: [
+                    {
+                        name: "نوع چوب",
+                        type: "select-image",
+                        price: 0,
+                        col: 6,
+                        description: '',
+                        required: false,
+                        disabled: false,
+                        hidden: false,
+                        label: true,
+                        taggable: true,
+                        multiple: true,
+                        pushTags: true,
+                        style: {
+                            active: false
+                        },
+                        options: [
+                            {
+                                key: 1,
+                                label: "گردو",
+                                price: 21000,
+                                src: "/uploads/choob1.jpg",
+                                value: null
+                            },
+                            {
+                                key: 2,
+                                label: "پسته",
+                                price: 21000,
+                                src: "/uploads/choob1.jpg",
+                                value: null
+                            }
+                        ]
+                    },
                     {
                         name: "سوییچ",
                         type: "switch",
