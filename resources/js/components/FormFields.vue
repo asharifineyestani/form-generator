@@ -9,9 +9,6 @@
                 <button @click="showFieldsInSidebar">C</button>
 
 
-
-
-
                 <b-form-group label="نام:" v-if="formFields[activeFieldId].hasOwnProperty('name')">
                     <input type="text" class="form-control" v-model="formFields[activeFieldId].name">
                 </b-form-group>
@@ -25,7 +22,16 @@
                     <input type="text" class="form-control" v-model="formFields[activeFieldId].value">
                 </b-form-group>
 
-                <div class="row"  v-if="formFields[activeFieldId].hasOwnProperty('min') && formFields[activeFieldId].hasOwnProperty('max')">
+                <b-form-group label="رنگ:" v-if="formFields[activeFieldId].hasOwnProperty('color')">
+                    <input type="text" class="form-control" v-model="formFields[activeFieldId].color">
+                </b-form-group>
+
+                <b-form-group label="رنگ سوییچ:" v-if="formFields[activeFieldId].hasOwnProperty('switchColor')">
+                    <input type="text" class="form-control" v-model="formFields[activeFieldId].switchColor">
+                </b-form-group>
+
+                <div class="row"
+                     v-if="formFields[activeFieldId].hasOwnProperty('min') && formFields[activeFieldId].hasOwnProperty('max')">
                     <div class="col">
                         <label>حداقل</label>
                         <input type="number" class="form-control" v-model="formFields[activeFieldId].min">
@@ -36,18 +42,59 @@
                     </div>
                 </div>
 
-
-                <div class="row" v-if="formFields[activeFieldId].hasOwnProperty('maxRows') && formFields[activeFieldId].hasOwnProperty('rows')">
-                    <div class="col">
-                        <label>سطر</label>
-                        <input type="number" class="form-control" v-model="formFields[activeFieldId].rows">
+                <b-form-group label="" v-if="formFields[activeFieldId].hasOwnProperty('switchValue')">
+                    <div class="row" v-if="formFields[activeFieldId].hasOwnProperty('switch') ">
+                        <div class="col">
+                            <label>برچسب غیرفعال</label>
+                            <input type="text" class="form-control" v-model="formFields[activeFieldId].switch[0].label">
+                        </div>
+                        <div class="col">
+                            <label>برچسب فعال</label>
+                            <input type="text" class="form-control" v-model="formFields[activeFieldId].switch[1].label">
+                        </div>
                     </div>
-                    <div class="col">
-                        <label>حداکثر سطر</label>
-                        <input type="number" class="form-control" v-model="formFields[activeFieldId].maxRows">
-                    </div>
-                </div>
+                </b-form-group>
 
+
+                <b-form-group label="وضعیت اولیه:" v-if="formFields[activeFieldId].hasOwnProperty('switchValue')">
+                    <toggle-button
+                        width="92"
+                        height="28"
+                        v-model="formFields[activeFieldId].switchValue"
+                        :sync="true"
+                        :labels="{'unchecked' : 'unchecked','checked' : 'checked'}"
+                    />
+                </b-form-group>
+
+
+                <b-form-group
+                    v-if="formFields[activeFieldId].hasOwnProperty('maxRows') && formFields[activeFieldId].hasOwnProperty('rows')">
+                    <div class="row">
+                        <div class="col">
+                            <label>سطر</label>
+                            <input type="number" class="form-control" v-model="formFields[activeFieldId].rows">
+                        </div>
+                        <div class="col">
+                            <label>حداکثر سطر</label>
+                            <input type="number" class="form-control" v-model="formFields[activeFieldId].maxRows">
+                        </div>
+                    </div>
+                </b-form-group>
+
+
+                <b-form-group
+                    v-if="formFields[activeFieldId].hasOwnProperty('with') && formFields[activeFieldId].hasOwnProperty('height')">
+                    <div class="row">
+                        <div class="col">
+                            <label>عرض</label>
+                            <input type="number" class="form-control" v-model="formFields[activeFieldId].with">
+                        </div>
+                        <div class="col">
+                            <label>طول</label>
+                            <input type="number" class="form-control" v-model="formFields[activeFieldId].height">
+                        </div>
+                    </div>
+                </b-form-group>
 
 
                 <b-form-group label="تنظیمات:">
@@ -60,7 +107,7 @@
                 </b-form-group>
 
 
-                <b-button-group>
+                <b-button-group v-if="formFields[activeFieldId].hasOwnProperty('col')">
                     <b-button @click="changeCol(4)">کوچک</b-button>
                     <b-button @click="changeCol(6)">متوسط</b-button>
                     <b-button @click="changeCol(12)">بزرگ</b-button>
@@ -91,7 +138,6 @@
                     group="fields">
 
 
-
                     <div class="form-group"
                          v-bind:class="{ active: element.style.active }"
                          v-for="(element , index) in formFields" :key="index"
@@ -103,6 +149,20 @@
 
                         <div v-if="element.hidden">Hidden</div>
                         <b-col :cols="element.col">
+
+                            <toggle-button
+                                v-if="element.type == 'switch'"
+                                :sync="true"
+                                :width="element.with"
+                                :height="element.height"
+                                :color="element.color"
+                                :switch-color="element.switchColor"
+                                :value="element.switchValue"
+                                :disabled="element.disabled"
+                                :labels="{'unchecked' : element.switch[0].label,'checked' : element.switch[1].label}"
+                            />
+
+
                             <b-form-textarea
                                 v-if="element.type == 'textarea'"
                                 :placeholder="element.placeholder"
@@ -149,10 +209,6 @@
                     </div>
 
 
-
-
-
-
                 </draggable>
             </div>
         </b-col>
@@ -173,7 +229,36 @@
                 activeFieldId: null,
                 test: null,
                 show: false,
+
                 fields: [
+                    {
+                        name: "سوییچ",
+                        type: "switch",
+                        icon: "boolean",
+                        switchValue: true,
+                        with: 92,
+                        height: 28,
+                        color: "#BFCBD9",
+                        switchColor: "#ffffff",
+                        switch: [
+                            {
+                                price: 0,
+                                label: 'unchecked'
+                            },
+                            {
+                                price: 1000000,
+                                label: "checked"
+                            }
+                        ],
+                        description: '',
+                        required: false,
+                        disabled: false,
+                        hidden: false,
+                        label: true,
+                        style: {
+                            active: false
+                        }
+                    },
                     {
                         name: "ایمیل",
                         type: "email",
@@ -259,8 +344,7 @@
                         }
                     },
                 ],
-                formFields: [
-                ],
+                formFields: [],
                 form: {
                     name: "نام فرم"
                 }
@@ -293,7 +377,7 @@
                     this.formFields[i].style.active = false;
             },
 
-            makeActiveField( index) {
+            makeActiveField(index) {
 
                 this.inActiveFields();
 
@@ -316,9 +400,7 @@
 
 
             deleteField(index) {
-
                 this.formFields.splice(index, 1);
-
             }
         }
     }
