@@ -9,6 +9,76 @@
                 <button @click="showFieldsInSidebar">C</button>
 
 
+                <b-modal
+                    id="modal-prevent-closing"
+                    ref="modal"
+                    title="Submit Your Name"
+                    @show="resetModal"
+                    @hidden="resetModal"
+                    @ok="handleOk"
+                >
+
+                    <template>
+                        <b-button @click="setModalOption('table')" v-if="modalOption == 'form'">table</b-button>
+                        <b-button @click="setModalOption('form')" v-else>form</b-button>
+                    </template>
+                    <b-table
+                        v-if="modalOption == 'table'"
+                        show-empty
+                        small
+                        stacked="md"
+                        :items="formFields[activeFieldId].options"
+                        :fields="tablefields"
+                    >
+                        <template #cell(name)="row">
+                            {{ row.value.first }} {{ row.value.last }}
+                        </template>
+
+                        <template #cell(actions)="row">
+                            <b-button size="sm" @click="info(row.item, row.index, $event.target)" class="mr-1">
+                                Info modal
+                            </b-button>
+                            <b-button size="sm" @click="row.toggleDetails">
+                                {{ row.detailsShowing ? 'Hide' : 'Show' }} Details
+                            </b-button>
+                        </template>
+
+                        <template #row-details="row">
+                            <b-card>
+                                <ul>
+                                    <li v-for="(value, key) in row.item" :key="key">{{ key }}: {{ value }}</li>
+                                </ul>
+                            </b-card>
+                        </template>
+                    </b-table>
+                    <form ref="form" @submit.stop.prevent="handleSubmitNewOption"
+                          v-else
+                    >
+                        <b-form-group
+                            label="Label"
+                            invalid-feedback="Label is required"
+                        >
+                            <b-form-input
+                                v-model="newOption.label"
+                                required
+                            ></b-form-input>
+                        </b-form-group>
+
+                        <b-form-group
+                            label="Price"
+                            invalid-feedback="Price is required"
+                        >
+                            <b-form-input
+                                v-model="newOption.price"
+                                type="number"
+                                required
+                            ></b-form-input>
+                        </b-form-group>
+
+
+                    </form>
+                </b-modal>
+
                 <b-form-group label="نام:" v-if="formFields[activeFieldId].hasOwnProperty('name')">
                     <input type="text" class="form-control" v-model="formFields[activeFieldId].name">
                 </b-form-group>
@@ -20,6 +90,10 @@
                 </b-form-group>
                 <b-form-group label="مقدار پیشفرض:" v-if="formFields[activeFieldId].hasOwnProperty('value')">
                     <input type="text" class="form-control" v-model="formFields[activeFieldId].value">
+                </b-form-group>
+
+                <b-form-group label="گزینه ها:">
+                    <b-button v-b-modal.modal-prevent-closing>مدیریت گزینه ها</b-button>
                 </b-form-group>
 
                 <b-form-group label="رنگ:" v-if="formFields[activeFieldId].hasOwnProperty('color')">
@@ -98,25 +172,38 @@
 
 
                 <b-form-group label="تنظیمات:">
-                    <b-form-checkbox v-model="formFields[activeFieldId].label" v-if="formFields[activeFieldId].hasOwnProperty('label')">عنوان</b-form-checkbox>
-                    <b-form-checkbox v-model="formFields[activeFieldId].required" v-if="formFields[activeFieldId].hasOwnProperty('required')"
-                                     :disabled=" ! (formFields[activeFieldId].label)" >اجباری
+                    <b-form-checkbox v-model="formFields[activeFieldId].label"
+                                     v-if="formFields[activeFieldId].hasOwnProperty('label')">عنوان
                     </b-form-checkbox>
-                    <b-form-checkbox v-model="formFields[activeFieldId].disabled" v-if="formFields[activeFieldId].hasOwnProperty('disabled')">غیرفعال</b-form-checkbox>
-                    <b-form-checkbox v-model="formFields[activeFieldId].hidden" v-if="formFields[activeFieldId].hasOwnProperty('hidden')">پنهان</b-form-checkbox>
-                    <b-form-checkbox v-model="formFields[activeFieldId].taggable" v-if="formFields[activeFieldId].hasOwnProperty('taggable')">taggable</b-form-checkbox>
-                    <b-form-checkbox v-model="formFields[activeFieldId].multiple" v-if="formFields[activeFieldId].hasOwnProperty('multiple')">چندتایی</b-form-checkbox>
-                    <b-form-checkbox v-model="formFields[activeFieldId].pushTags" v-if="formFields[activeFieldId].hasOwnProperty('pushTags')">push-tags</b-form-checkbox>
+                    <b-form-checkbox v-model="formFields[activeFieldId].required"
+                                     v-if="formFields[activeFieldId].hasOwnProperty('required')"
+                                     :disabled=" ! (formFields[activeFieldId].label)">اجباری
+                    </b-form-checkbox>
+                    <b-form-checkbox v-model="formFields[activeFieldId].disabled"
+                                     v-if="formFields[activeFieldId].hasOwnProperty('disabled')">غیرفعال
+                    </b-form-checkbox>
+                    <b-form-checkbox v-model="formFields[activeFieldId].hidden"
+                                     v-if="formFields[activeFieldId].hasOwnProperty('hidden')">پنهان
+                    </b-form-checkbox>
+                    <b-form-checkbox v-model="formFields[activeFieldId].taggable"
+                                     v-if="formFields[activeFieldId].hasOwnProperty('taggable')">taggable
+                    </b-form-checkbox>
+                    <b-form-checkbox v-model="formFields[activeFieldId].multiple"
+                                     v-if="formFields[activeFieldId].hasOwnProperty('multiple')">چندتایی
+                    </b-form-checkbox>
+                    <b-form-checkbox v-model="formFields[activeFieldId].pushTags"
+                                     v-if="formFields[activeFieldId].hasOwnProperty('pushTags')">push-tags
+                    </b-form-checkbox>
                 </b-form-group>
 
 
-
-
-                <b-button-group v-if="formFields[activeFieldId].hasOwnProperty('col')">
-                    <b-button @click="changeCol(4)">کوچک</b-button>
-                    <b-button @click="changeCol(6)">متوسط</b-button>
-                    <b-button @click="changeCol(12)">بزرگ</b-button>
-                </b-button-group>
+                <b-form-group label="اندازه:">
+                    <b-button-group v-if="formFields[activeFieldId].hasOwnProperty('col')">
+                        <b-button @click="changeCol(4)">کوچک</b-button>
+                        <b-button @click="changeCol(6)">متوسط</b-button>
+                        <b-button @click="changeCol(12)">بزرگ</b-button>
+                    </b-button-group>
+                </b-form-group>
 
 
             </div>
@@ -141,8 +228,6 @@
                     class="list-group"
                     :list="formFields"
                     group="fields">
-
-
 
 
                     <div class="form-group"
@@ -246,6 +331,27 @@
         },
         data() {
             return {
+                newOption: {},
+                modalOption: 'form',
+                tablefields: [
+                    {key: 'label', label: 'برچسب', sortable: true, sortDirection: 'desc'},
+                    {key: 'price', label: 'قیمت', sortable: true, sortDirection: 'desc'},
+                    {key: 'actions', label: 'Actions'}
+                ],
+                totalRows: 1,
+                currentPage: 1,
+                perPage: 5,
+                pageOptions: [5, 10, 15],
+                sortBy: '',
+                sortDesc: false,
+                sortDirection: 'asc',
+                filter: null,
+                filterOn: [],
+                infoModal: {
+                    id: 'info-modal',
+                    title: '',
+                    content: ''
+                },
                 activeFieldId: null,
                 test: null,
                 show: false,
@@ -278,7 +384,14 @@
                             {
                                 key: 2,
                                 label: "پسته",
-                                price: 21000,
+                                price: 8922,
+                                src: "/uploads/choob1.jpg",
+                                value: null
+                            },
+                            {
+                                key: 2,
+                                label: "زعفران",
+                                price: 666,
                                 src: "/uploads/choob1.jpg",
                                 value: null
                             }
@@ -415,6 +528,19 @@
 
         methods: {
 
+            handleOk(bvModalEvt) {
+                bvModalEvt.preventDefault()
+                this.handleSubmitNewOption()
+            },
+
+            setModalOption(value) {
+                this.modalOption = value;
+            },
+
+            handleSubmitNewOption() {
+                this.formFields[this.activeFieldId].options.push(this.newOption);
+            },
+
 
             changeCol(value) {
                 this.formFields[this.activeFieldId].col = value;
@@ -462,57 +588,63 @@
 
 <style scoped lang="scss">
 
-    .active {
-        border: 1px yellow solid;
-        background: #f3f397;
-        padding: 15px;
-        margin-bottom: 15px;
-    }
 
-
-    .form-group {
-        position: relative;
-        margin-bottom: 24px;
-
-        button {
-            width: 30px;
-            height: 30px;
-            line-height: 30px;
-            text-align: center;
-            background: black;
-            color: white;
-            position: absolute;
-            right: 15px;
-            bottom: -15px;
-            display: none;
+    .list-group {
+        .active {
+            border: 1px yellow solid;
+            background: #f3f397;
+            padding: 15px;
+            margin-bottom: 15px;
         }
-    }
 
 
-    .active button {
-        display: block;
-    }
+        .form-group {
+            position: relative;
+            margin-bottom: 24px;
 
-    button.delete {
-        right: 60px;
-        background: red;
-    }
+            button {
+                width: 30px;
+                height: 30px;
+                line-height: 30px;
+                text-align: center;
+                background: black;
+                color: white;
+                position: absolute;
+                right: 15px;
+                bottom: -15px;
+                display: none;
+            }
+        }
 
 
-    *[dir="rtl"] {
-        button {
-
-            right: inherit;
-            left: 15px;
-            bottom: -15px;
-
+        .active button {
+            display: block;
         }
 
         button.delete {
-            right: inherit;
-            left: 60px;
-
+            right: 60px;
+            background: red;
         }
+
+
+    }
+
+    *[dir="rtl"] {
+        .list-group {
+            button {
+                right: inherit;
+                left: 15px;
+                bottom: -15px;
+
+            }
+
+            button.delete {
+                right: inherit;
+                left: 60px;
+
+            }
+        }
+
     }
 
 
