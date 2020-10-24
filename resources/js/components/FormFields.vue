@@ -12,15 +12,14 @@
                 <b-modal
                     id="modal-prevent-closing"
                     ref="modal"
-                    title="Submit Your Name"
-                    @show="resetModal"
-                    @hidden="resetModal"
+                    :title="formFields[activeFieldId].name"
                     @ok="handleOk"
+                    ok-title="افزودن آیتم جدید"
+                    cancel-title="بستن"
                 >
 
                     <template>
-                        <b-button @click="setModalOption('table')" v-if="modalOption == 'form'">table</b-button>
-                        <b-button @click="setModalOption('form')" v-else>form</b-button>
+                        <b-button @click="setModalOption('table')" v-if="modalOption == 'form'">مشاهده آپشن ها</b-button>
                     </template>
                     <b-table
                         v-if="modalOption == 'table'"
@@ -28,18 +27,19 @@
                         small
                         stacked="md"
                         :items="formFields[activeFieldId].options"
-                        :fields="tablefields"
+                        :fields="tableFields"
                     >
                         <template #cell(name)="row">
                             {{ row.value.first }} {{ row.value.last }}
                         </template>
 
                         <template #cell(actions)="row">
-                            <b-button size="sm" @click="info(row.item, row.index, $event.target)" class="mr-1">
-                                Info modal
+                            <b-button size="sm" @click="deleteOption(row.item, row.index, $event.target)"
+                                      class="mr-1 btn-danger">
+                               حذف
                             </b-button>
                             <b-button size="sm" @click="row.toggleDetails">
-                                {{ row.detailsShowing ? 'Hide' : 'Show' }} Details
+                                {{ row.detailsShowing ? ' پنهان' : 'نمایش جزییات' }}
                             </b-button>
                         </template>
 
@@ -55,7 +55,7 @@
                           v-else
                     >
                         <b-form-group
-                            label="Label"
+                            label="برچسب"
                             invalid-feedback="Label is required"
                         >
                             <b-form-input
@@ -65,14 +65,26 @@
                         </b-form-group>
 
                         <b-form-group
-                            label="Price"
-                            invalid-feedback="Price is required"
+                            v-if="form.price == true "
+                            label="قیمت"
                         >
                             <b-form-input
                                 v-model="newOption.price"
                                 type="number"
-                                required
                             ></b-form-input>
+
+                        </b-form-group>
+
+
+                        <b-form-group
+                            label="مقدار پیشفرض"
+                        >
+
+                            <b-form-input
+                                v-model="newOption.value"
+                                type="text"
+                            ></b-form-input>
+
                         </b-form-group>
 
 
@@ -92,7 +104,7 @@
                     <input type="text" class="form-control" v-model="formFields[activeFieldId].value">
                 </b-form-group>
 
-                <b-form-group label="گزینه ها:">
+                <b-form-group label="گزینه ها:" v-if="formFields[activeFieldId].hasOwnProperty('options')">
                     <b-button v-b-modal.modal-prevent-closing>مدیریت گزینه ها</b-button>
                 </b-form-group>
 
@@ -332,10 +344,12 @@
         data() {
             return {
                 newOption: {},
-                modalOption: 'form',
-                tablefields: [
+                editOption: {},
+                modalOption: 'table',
+                tableFields: [
                     {key: 'label', label: 'برچسب', sortable: true, sortDirection: 'desc'},
                     {key: 'price', label: 'قیمت', sortable: true, sortDirection: 'desc'},
+                    {key: 'value', label: 'پیشفرض', sortable: true, sortDirection: 'desc'},
                     {key: 'actions', label: 'Actions'}
                 ],
                 totalRows: 1,
@@ -512,7 +526,8 @@
                 ],
                 formFields: [],
                 form: {
-                    name: "نام فرم"
+                    name: "نام فرم",
+                    price: true,
                 }
 
             }
@@ -529,6 +544,7 @@
         methods: {
 
             handleOk(bvModalEvt) {
+
                 bvModalEvt.preventDefault()
                 this.handleSubmitNewOption()
             },
@@ -538,7 +554,16 @@
             },
 
             handleSubmitNewOption() {
+
+                if (this.modalOption == 'table' || Object.keys(this.newOption).length === 0 && this.newOption.constructor === Object) {
+                    this.modalOption = 'form';
+                    return 0;
+                }
+
+
                 this.formFields[this.activeFieldId].options.push(this.newOption);
+                this.modalOption = 'table';
+                this.newOption = {};
             },
 
 
@@ -580,6 +605,31 @@
 
             deleteField(index) {
                 this.formFields.splice(index, 1);
+            },
+
+            deleteOption(item, index, event) {
+                console.log(item)
+                console.log(index)
+                console.log(event)
+                this.formFields[this.activeFieldId].options.splice(index, 1);
+            },
+
+            setEditOption(item, index, event) {
+                console.log(item)
+                console.log(index)
+                console.log(event)
+                this.formFields[this.activeFieldId].options.splice(index, 1);
+            },
+
+            containsObject(obj, list) {
+                let i;
+                for (i = 0; i < list.length; i++) {
+                    if (list[i] === obj) {
+                        return true;
+                    }
+                }
+
+                return false;
             }
         }
     }
