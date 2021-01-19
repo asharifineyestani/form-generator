@@ -1,0 +1,59 @@
+
+
+.list-group {
+    .active {
+        border: 1px yellow solid;
+        background: #f3f397;
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+
+
+    .form-group {
+        position: relative;
+        margin-bottom: 24px;
+
+        button {
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            background: black;
+            color: white;
+            position: absolute;
+            right: 15px;
+            bottom: -15px;
+            display: none;
+        }
+    }
+
+
+    .active button {
+        display: block;
+    }
+
+    button.delete {
+        right: 60px;
+        background: red;
+    }
+
+
+}
+
+*[dir="rtl"] {
+    .list-group {
+        button {
+            right: inherit;
+            left: 15px;
+            bottom: -15px;
+
+        }
+
+        button.delete {
+            right: inherit;
+            left: 60px;
+
+        }
+    }
+
+}

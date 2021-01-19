@@ -28,7 +28,7 @@ Vue.component('draggable', require('./components/ExampleComponent.vue').default)
 Vue.component('example-component', draggable);
 Vue.component('field-table', require('./components/FieldTable.vue').default);
 Vue.component('form-view', require('./components/FormView.vue').default);
-Vue.component('form-fields', require('./components/FormFields.vue').default);
+Vue.component('form-fields', require('./components/FormFields/Index').default);
 Vue.component('options-table', require('./components/OptionsTable.vue').default);
 Vue.component('v-select', vSelect)
 Vue.component('vue-select-image', VueSelectImage)
