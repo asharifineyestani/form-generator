@@ -1,8 +1,12 @@
 <template>
     <b-row class="mt-2">
+        <b-col cols="12">
+            <button v-on:click="storeForm(form)">store form</button>
+            <button v-on:click="updateForm(form)">update form</button>
+        </b-col>
         <b-col cols="3">
             <div class="p-2 alert alert-secondary" v-if="activeFieldId !== null">
-                <h3>{{ form.fields[activeFieldId].name }}</h3>
+                <h3>{{ form.fields[activeFieldId].label }}</h3>
                 <button @click="showFieldsInSidebar">C</button>
                 <b-modal
                     id="modal-prevent-closing"
@@ -84,9 +88,14 @@
                     </form>
                 </b-modal>
 
+                <b-form-group label="برچسب:" v-if="form.fields[activeFieldId].hasOwnProperty('label')">
+                    <input type="text" class="form-control" v-model="form.fields[activeFieldId].label">
+                </b-form-group>
+
                 <b-form-group label="نام:" v-if="form.fields[activeFieldId].hasOwnProperty('name')">
                     <input type="text" class="form-control" v-model="form.fields[activeFieldId].name">
                 </b-form-group>
+
                 <b-form-group label="توضیحات:" v-if="form.fields[activeFieldId].hasOwnProperty('description')">
                     <input type="text" class="form-control" v-model="form.fields[activeFieldId].description">
                 </b-form-group>
@@ -177,8 +186,8 @@
 
 
                 <b-form-group label="تنظیمات:">
-                    <b-form-checkbox v-model="form.fields[activeFieldId].label"
-                                     v-if="form.fields[activeFieldId].hasOwnProperty('label')">عنوان
+                    <b-form-checkbox v-model="form.fields[activeFieldId].hasLabel"
+                                     v-if="form.fields[activeFieldId].hasOwnProperty('hasLabel')">عنوان
                     </b-form-checkbox>
                     <b-form-checkbox v-model="form.fields[activeFieldId].required"
                                      v-if="form.fields[activeFieldId].hasOwnProperty('required')"
@@ -219,7 +228,7 @@
                     :list="fields"
                     :group="{ name: 'fields', pull: 'clone', put: false }">
                     <div class="list-group-item" v-for="element in fields" :key="element.name">
-                        {{ element.name }}
+                        {{ element.label }}
                     </div>
                 </draggable>
             </div>
@@ -241,7 +250,7 @@
                          @click="makeActiveField(index)"
 
                     >
-                        <label v-if="element.label"> <span v-if="element.required">*</span> {{ element.name }}
+                        <label v-if="element.hasLabel"> <span v-if="element.required">*</span> {{ element.label }}
                         </label>
 
                         <div v-if="element.hidden">Hidden</div>
@@ -328,6 +337,7 @@
 <script>
 import draggable from 'vuedraggable'
 import {data} from './data'
+import axios from "axios";
 
 export default {
     name: 'form.fields',
@@ -347,6 +357,28 @@ export default {
     },
 
     methods: {
+
+        storeForm(data) {
+            axios.post('/api/ajax/forms', data)
+                .then(function (response) {
+                    console.log(response);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+
+        },
+
+        updateForm(data) {
+            axios.put('/api/ajax/forms/'+ data.slug, data)
+                .then(function (response) {
+                    console.log(response);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+
+        },
 
         handleOk(bvModalEvt) {
 
@@ -436,6 +468,16 @@ export default {
 
             return false;
         }
+    },
+    mounted() {
+        let url = window.location.href.split('/');
+        let i = url.indexOf('forms');
+        let slug = url[i + 1];
+
+        axios
+            .get('/api/ajax/forms/' + slug)
+            .then(response => (this.form = response.data))
+
     }
 }
 </script>

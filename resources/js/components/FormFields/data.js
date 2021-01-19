@@ -30,7 +30,8 @@ export const data = {
 
     fields: fields,
     form: {
-        name: "نام فرم",
+        title: "form1",
+        slug: "form1",
         price: true,
         fields: []
     }

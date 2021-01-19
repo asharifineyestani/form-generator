@@ -1,6 +1,7 @@
 export const fields = [
     {
-        name: "انتخاب",
+        label: "انتخاب",
+        name: "select",
         type: "select-image",
         price: 0,
         col: 6,
@@ -8,7 +9,7 @@ export const fields = [
         required: false,
         disabled: false,
         hidden: false,
-        label: true,
+        hasLabel: true,
         taggable: true,
         multiple: true,
         pushTags: true,
@@ -40,7 +41,8 @@ export const fields = [
         ]
     },
     {
-        name: "سوییچ",
+        label: "سوییچ",
+        name: "switch",
         type: "switch",
         icon: "boolean",
         switchValue: true,
@@ -62,13 +64,14 @@ export const fields = [
         required: false,
         disabled: false,
         hidden: false,
-        label: true,
+        hasLabel: true,
         style: {
             active: false
         }
     },
     {
-        name: "ایمیل",
+        label: "ایمیل",
+        name: "email",
         type: "email",
         icon: "email",
         description: '',
@@ -76,14 +79,15 @@ export const fields = [
         required: false,
         disabled: false,
         hidden: false,
-        label: true,
+        hasLabel: true,
         col: 12,
         style: {
             active: false
         }
     },
     {
-        name: "متن چند خطی",
+        label: "متن چند خطی",
+        name: "textarea",
         type: "textarea",
         icon: "text",
         rows: 1,
@@ -93,7 +97,7 @@ export const fields = [
         required: false,
         disabled: false,
         hidden: false,
-        label: true,
+        hasLabel: true,
         value: '',
         col: 12,
         style: {
@@ -101,7 +105,8 @@ export const fields = [
         }
     },
     {
-        name: "متن",
+        label: "متن",
+        name: "text",
         type: "text",
         icon: "text",
         min: 1,
@@ -111,7 +116,7 @@ export const fields = [
         required: false,
         disabled: false,
         hidden: false,
-        label: true,
+        hasLabel: true,
         value: '',
         col: 12,
         style: {
@@ -119,7 +124,8 @@ export const fields = [
         }
     },
     {
-        name: "عدد",
+        label: "عدد",
+        name: "number",
         type: "number",
         icon: "text",
         min: 1,
@@ -129,7 +135,7 @@ export const fields = [
         required: false,
         disabled: false,
         hidden: false,
-        label: true,
+        hasLabel: true,
         value: null,
         col: 12,
         style: {
