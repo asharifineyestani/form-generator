@@ -13,7 +13,7 @@ Route::resource('languages', 'LanguageController');
 
 
 Route::resource('forms', 'FormController');
-Route::get('forms/{id}/view', 'FormController@view');
+Route::get('forms/{slug}/view', 'FormController@view');
 Route::get('forms/{id}/fields', 'FormController@fields');
 Route::resource('fields', 'FieldController');
 Route::resource('options', 'OptionController');

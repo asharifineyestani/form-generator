@@ -56,10 +56,11 @@ class FormController extends CrudController
     }
 
 
-    public function view($id)
+    public function view($slug)
     {
+        $form =  Form::where('slug' , $slug)->first();
         $field['name'] = 'form-view';
-        return view('vue' , compact('field'));
+        return view('forms.show' , compact('field' , 'form'));
     }
 
 

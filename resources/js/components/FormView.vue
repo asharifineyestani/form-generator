@@ -1,233 +1,135 @@
 <template>
-    <div>
 
-        <div v-if="totalPrice > 0 " class="jumbotron">
-            <h3 class="display-5">قیمت:
-                {{totalPrice}}
-                تومان
-            </h3>
+
+    <b-col cols="9">
+        <button v-on:click="storeAnswer(answer)">answer</button>
+        <h3>{{ form.title }}</h3>
+        <div class="form-group"
+             v-for="(element , index) in form.fields" :key="index"
+        >
+            <label v-if="element.hasLabel"> <span v-if="element.required">*</span> {{ element.label }}</label>
+
+            <div v-if="element.hidden">Hidden</div>
+            <b-col :cols="element.col">
+                <v-select
+                    dir="rtl"
+                    v-if="element.type == 'select-image'"
+                    :options="element.options"
+                    :multiple="element.multiple"
+                    :taggable="element.taggable"
+                    :push-tags="element.pushTags"
+
+                >
+                </v-select>
+
+
+                <toggle-button
+                    v-if="element.type == 'switch'"
+                    :sync="true"
+                    :width="element.with"
+                    :height="element.height"
+                    :color="element.color"
+                    :switch-color="element.switchColor"
+                    :value="element.switchValue"
+                    :disabled="element.disabled"
+                    :labels="{'unchecked' : element.switch[0].label,'checked' : element.switch[1].label}"
+                />
+
+
+                <b-form-textarea
+                    v-if="element.type == 'textarea'"
+                    :placeholder="element.placeholder"
+                    :disabled="element.disabled"
+                    :value="element.value"
+                    :rows="element.rows"
+                    :max-rows="element.maxRows"
+                ></b-form-textarea>
+
+
+                <b-form-input
+                    v-if="element.type == 'number'"
+                    :placeholder="element.placeholder"
+                    :disabled="element.disabled"
+                    :value="element.value"
+                    type="number"
+                    :min="element.min" :max="element.max"
+                ></b-form-input>
+
+
+                <b-form-input
+                    v-if="element.type == 'email'"
+                    :placeholder="element.placeholder"
+                    :disabled="element.disabled"
+                    :value="element.value"
+                    type="email"
+                ></b-form-input>
+
+
+                <b-form-input
+                    v-if="element.type == 'text'"
+                    :placeholder="element.placeholder"
+                    :disabled="element.disabled"
+                    :value="element.value"
+                    :maxlength="element.max"
+                    v-model="answer.body.text.value"
+                ></b-form-input>
+
+            </b-col>
+
+            <small class="form-text text-muted">{{ element.description }}</small>
+
+
         </div>
-        <div class="form-row">
-            <div v-for="field in fields" :class="'form-group col-md-'+field.col">
-                <template v-if="field.type=='boolean'">
-                    <label>{{field.title}}</label>
-                    <br>
-                    <toggle-button :value="true"
-                                   :labels="{'unchecked' : field.options[0].value,'checked' : field.options[1].value}"
-                                   @change="changeToggleSwitch($event , field.options , field.id )"
-                                   v-model="form.options[field.id]"
-                    />
-                </template>
-
-                <template v-if="field.type == 'image-cropper'">
-                    <label></label>
-                    <div class="form-group">
-                        <span>لطفا طرح مورد نظر را آپلود نمایید</span>
-                        <button @click="toggleShow" class="btn btn-md btn-info" type="button">بارگزاری
-                            تصویر
-                        </button>
-                        <image-crop field="img"
-
-                                    v-model="show"
-                                    :noCircle="true"
-                                    :noSquare="true"
-                                    :width="300"
-                                    :height="300"
-                                    url="/upload"
-                                    img-format="png">
-
-                        </image-crop>
-                        <img :src="imgDataUrl">
-                    </div>
-                </template>
-
-                <template v-if="field.type == 'select-image'">
-                    <label>{{field.title}}</label>
-                    <v-select
-                        dir="rtl"
-                        v-model="form.options[field.id]"
-                        label="alt"
-                        :options="field.options"
-                        @input="setSelected"
-                    >
-                        <template slot="option" slot-scope="option">
-                            <img :src="option.src" style="width: 50px;"/>
-                            {{ option.alt }}
-                        </template>
-                    </v-select>
-                </template>
-
-                <template v-if="field.type == 'multiple-select-image'">
-                    <label>{{field.title}}</label>
-                    <v-select
-                        dir="rtl"
-                        v-model="form.options[field.id]"
-                        label="alt"
-                        :options="field.options"
-                        @input="setSelected"
-                        taggable
-                        multiple
-                    >
-                        <template slot="option" slot-scope="option">
-                            <img :src="option.src" style="width: 50px;"/>
-                            {{ option.alt }}
-                        </template>
-                    </v-select>
-                </template>
-
-                <template v-if="field.type == 'string'">
-                    <label>{{field.title}}</label>
-                    <input class="form-control" type="text">
-                </template>
-
-                <template v-if="field.type == 'select'">
-                    <label>{{field.title}}</label>
-                    <v-select
-                        dir="rtl"
-                        v-model="form.options[field.id]"
-                        label="alt"
-                        :options="field.options"
-                        @input="setSelected"
-                    >
-                    </v-select>
-                </template>
-
-                <template v-else-if="field.type === 'multiple-select'">
-                    <label>{{field.title}}</label>
-                    <v-select
-                        dir="rtl"
-                        v-model="form.options[field.id]"
-                        taggable
-                        multiple
-                        label="alt"
-                        :options="field.options"
-                        @input="setSelected"
-                    />
-                </template>
-            </div>
-        </div>
-    </div>
-
+    </b-col>
 </template>
 
 <script>
 
-    import axios from 'axios'
+import axios from 'axios'
 
 
-    export default {
-        data() {
-            return {
-
-                myOptions: {
-                    layout: {
-                        color: 'black',
-                        backgroundColor: 'lightgray',
-                        selectedColor: 'white',
-                        selectedBackgroundColor: 'green',
-                        borderColor: 'black',
-                        fontFamily: 'Arial',
-                        fontWeight: 'normal',
-                        fontWeightSelected: 'bold',
-                        squareCorners: false,
-                        noBorder: false
-                    },
-                    size: {
-                        fontSize: 14,
-                        height: 34,
-                        padding: 7,
-                        width: 100
-                    },
-                    items: {
-                        delay: .4,
-                        preSelected: 'unknown',
-                        disabled: false,
-                        labels: [
-                            {name: 'Off', color: 'white', backgroundColor: 'red'},
-                            {name: 'On', color: 'white', backgroundColor: 'green'}
-                        ]
+export default {
+    props: {
+        slug: String,
+    },
+    data() {
+        return {
+            form: {},
+            answer: {
+                form_id: null,
+                body: {
+                    text: {
+                        value: null
                     }
-                },
-                form: {
-                    options: []
-                },
-                fields: {},
-                formOptions: [],
-                entityId: window.location.href.split('/')[4],
-
-
-                show: false,
-                params: {
-                    token: '123456798',
-                    name: 'avatar'
-                },
-                headers: {
-                    smail: '*_~'
-                },
-                imgDataUrl: '' // the datebase64 url of created image
+                }
             }
-        },
-        created() {
-            this.get();
-        },
+        }
+    },
+    mounted() {
+        axios
+            .get('/api/ajax/forms/' + this.slug)
+            .then(response => {
+                this.form = response.data;
+                this.answer.form_id = this.form.id
+            })
 
-        computed: {
-            totalPrice: function () {
+    },
 
-                let total_price = 0;
+    created() {
+        console.log(this.form.id)
+    },
+    methods: {
 
-                this.form.options.forEach(function (option) {
-                    if (Array.isArray(option))
-                        option.forEach(function (item) {
-                            total_price += item.price;
-                        });
-                    else
-                        total_price += option.price;
+        storeAnswer(data) {
+            axios.post('/api/ajax/answers', data)
+                .then(function (response) {
+                    console.log(response);
+                })
+                .catch(function (error) {
+                    console.log(error);
                 });
 
-                return total_price;
-            }
-        },
-
-        methods: {
-
-
-            changeToggleSwitch(obj, options, id) {
-                if (obj.value)
-                    this.form.options[id] = options[1];
-                else
-                    this.form.options[id] = options[0];
-            },
-
-            toggleShow() {
-                this.show = !this.show;
-            },
-
-
-            get() {
-                axios
-                    .get('/api/form-generator/forms/' + this.entityId)
-                    .then(response => (this.fields = response.data.data.fields))
-            },
-
-
-            onSelectImage(value) {
-                this.form.options[100] = value;
-                this.calculate();
-            },
-
-
-            calculate() {
-                let price = this.price;
-                this.form.options.forEach(function (item) {
-                    let options = Array.isArray(item) ? item : [item];
-                    options.forEach(function (option) {
-                        price += option.price;
-                    })
-                });
-
-                this.price += price;
-            },
         }
     }
+}
 </script>
