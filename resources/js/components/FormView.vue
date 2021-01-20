@@ -2,7 +2,7 @@
 
 
     <b-col cols="9">
-        <button v-on:click="storeAnswer(answer)">answer</button>
+        <button v-on:click="storeAnswer(computedForm)">answer</button>
         <h3>{{ form.title }}</h3>
         <div class="form-group"
              v-for="(element , index) in form.fields" :key="index"
@@ -18,6 +18,7 @@
                     :multiple="element.multiple"
                     :taggable="element.taggable"
                     :push-tags="element.pushTags"
+                    v-model="draft[element.name]"
 
                 >
                 </v-select>
@@ -33,6 +34,7 @@
                     :value="element.switchValue"
                     :disabled="element.disabled"
                     :labels="{'unchecked' : element.switch[0].label,'checked' : element.switch[1].label}"
+                    v-model="draft[element.name]"
                 />
 
 
@@ -43,6 +45,7 @@
                     :value="element.value"
                     :rows="element.rows"
                     :max-rows="element.maxRows"
+                    v-model="draft[element.name]"
                 ></b-form-textarea>
 
 
@@ -53,6 +56,7 @@
                     :value="element.value"
                     type="number"
                     :min="element.min" :max="element.max"
+                    v-model="draft[element.name]"
                 ></b-form-input>
 
 
@@ -62,6 +66,7 @@
                     :disabled="element.disabled"
                     :value="element.value"
                     type="email"
+                    v-model="draft[element.name]"
                 ></b-form-input>
 
 
@@ -71,7 +76,7 @@
                     :disabled="element.disabled"
                     :value="element.value"
                     :maxlength="element.max"
-                    v-model="answer.body.text.value"
+                    v-model="draft[element.name]"
                 ></b-form-input>
 
             </b-col>
@@ -95,14 +100,7 @@ export default {
     data() {
         return {
             form: {},
-            answer: {
-                form_id: null,
-                body: {
-                    text: {
-                        value: null
-                    }
-                }
-            }
+            draft : {}
         }
     },
     mounted() {
@@ -110,7 +108,8 @@ export default {
             .get('/api/ajax/forms/' + this.slug)
             .then(response => {
                 this.form = response.data;
-                this.answer.form_id = this.form.id
+                this.form.form_id = response.data.id
+
             })
 
     },
@@ -129,6 +128,28 @@ export default {
                     console.log(error);
                 });
 
+        }
+    },
+
+    computed: {
+        // a computed getter
+        computedForm: function () {
+            let answer = {
+                body: null,
+                form_id: null
+            }
+            let thisClass = this;
+
+            let fields = this.form.fields;
+            fields.forEach(function (element) {
+                element.value = thisClass.draft.[element.name];
+            });
+
+            answer.form_id = this.form.id;
+
+            answer.body = fields
+
+            return answer;
         }
     }
 }
