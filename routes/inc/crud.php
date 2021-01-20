@@ -10,7 +10,7 @@
 Route::resource('menu', 'MenuController');
 Route::resource('languages', 'LanguageController');
 
-
+Route::resource('answers', 'AnswerController');
 
 Route::resource('forms', 'FormController');
 Route::get('forms/{slug}/view', 'FormController@view');
